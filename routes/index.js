@@ -11,6 +11,8 @@ router.route('/product')
     .post(productController.add)
 
 router.route('/product/:id')
+    .get(productController.getOne)
+    .put(productController.updateAmount)
     .delete(productController.remove)
 
 module.exports = router;

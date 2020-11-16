@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-//schema
 const productSchema = mongoose.Schema({
     name: {
         type: String,
@@ -18,8 +17,7 @@ const productSchema = mongoose.Schema({
         required: true
     }
 });
-// Export Bio Model
 const Product = module.exports = mongoose.model('product', productSchema);
 module.exports.get = function (callback, limit) {
     Product.find(callback).limit(limit);
-}
+};

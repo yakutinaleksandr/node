@@ -1,18 +1,13 @@
 Product = require('../model/product');
 
 exports.getAll = (req, res) => {
-    Product.get(function (err, products) {
-        if (err) {
-            return res.json({
-                status: "error",
-                message: err
-            });
-        }
-        return res.json({
-            status: "success",
-            data: products
-        });
-    });
+    Product.find()
+        .then(data => {
+            res.send({products: data})
+        })
+        .catch(err => {
+            res.status(500).send({message: `Couldn't get list of Products: ${err.message}`})
+        })
 };
 
 exports.add = (req, res) => {
@@ -21,15 +16,13 @@ exports.add = (req, res) => {
     product.price = req.body.price;
     product.amount = req.body.amount;
     product.icon = req.body.icon;
-    product.save( err => {
-        if (err) {
-            return res.json(err);
-        }
-        return res.json({
-            message: "New Product Added!",
-            data: product
-        });
-    });
+    product.save()
+        .then(() => {
+            res.send()
+        })
+        .catch(err => {
+            res.status(500).send({message: `Couldn't create new Product: ${err.message}`})
+        })
 };
 
 exports.remove = (req, res) => {
@@ -39,8 +32,39 @@ exports.remove = (req, res) => {
             if(!data) {
                 return res.status(404).send({message: `Product with id ${id} not found`})
             }
-            res.json({
-                status: "success",
-            })
+            res.send()
+        })
+        .catch(err => {
+            res.status(500).send({message: `Couldn't remove Product ${id}: ${err.message}`})
         })
 };
+
+exports.getOne = (req, res) => {
+    const id = req.params.id;
+    Product.findById(id)
+        .then(data => {
+            if(!data) {
+                return res.status(404).send({message: `Product with id ${id} not found`})
+            }
+            res.send({data: data})
+        })
+        .catch(err => {
+            res.status(500).send({message: `Couldn't get Product ${id}: ${err.message}`})
+        })
+};
+
+exports.updateAmount = (req, res) => {
+    const id = req.params.id;
+    const newAmount = req.body.amount;
+
+    Product.findByIdAndUpdate(id, {amount: newAmount}, { useFindAndModify: false })
+        .then(data => {
+            if(!data) {
+                return res.status(404).send({message: `Product with id ${id} not found`})
+            }
+            res.send()
+        })
+        .catch(err => {
+            res.status(500).send({message: `Couldn't update amount of Product ${id}: ${err.message}`})
+        })
+}
